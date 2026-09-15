@@ -5,15 +5,12 @@ buildscript {
         agp_version1 = '4.2.2'
     }
     repositories {
-        mavenLocal()
+        google()
         mavenCentral()
         gradlePluginPortal()
-        google()
         maven { url "https://jitpack.io" }
-//        maven { url 'https://download.01.org/crosswalk/releases/crosswalk/android/maven2' }
+        maven { url 'https://maven.aliyun.com/repository/public' }
         maven { url 'https://o0halflife0o.github.io/crosswalk/releases/crosswalk/android/maven2' }
-        maven { url 'http://home.jundie.top:81/xwalk/maven2'; allowInsecureProtocol = true }
-//        maven { url 'http://9xi4o.tk/maven2' }
     }
     dependencies {
         classpath "com.android.tools.build:gradle:$agp_version1"
@@ -25,14 +22,15 @@ buildscript {
 
 allprojects {
     repositories {
+        google()
         mavenCentral()
         gradlePluginPortal()
-        google()
         maven { url "https://jitpack.io" }
-//        maven { url 'https://download.01.org/crosswalk/releases/crosswalk/android/maven2' }
+        // 阿里云公共库镜像（包含 JCenter 完整历史归档，提供 okgo、tv-recyclerview 等旧库）
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        // Crosswalk 专用依赖库镜像
         maven { url 'https://o0halflife0o.github.io/crosswalk/releases/crosswalk/android/maven2' }
-        maven { url 'http://9xi4o.tk/maven2' }
-//        maven { url 'http://home.jundie.top:81/xwalk/maven2'; allowInsecureProtocol = true }
+        jcenter()
     }
 }
 
