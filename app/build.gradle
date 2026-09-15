@@ -5,31 +5,12 @@ android {
 
     signingConfigs {
         sigin {
-            storeFile file("BUNNY.jks")
-            storePassword "000624"
-            keyAlias "bunny"
-            keyPassword "426000"
-        }
-    }
-
-    applicationVariants.all { variant ->
-        variant.outputs.all { output ->
-            def oldFile = output.outputFile
-            def newName = '';
-            //只有release编译时生效
-            if(variant.buildType.name.equals('release')){
-                // APK输出文件名规则：极剪-版本名-.apk
-//                def releaseApkName = "app_${variant.buildType.name}.apk"
-                def releaseApkName = "Jade_SHJ_${releaseTime()}_${variant.buildType.name}.apk"
-                // 设置apk输出文件夹
-                output.getPackageApplication().outputDirectory = new File(project.rootDir.absolutePath + "/Release")
-                // 设置apk输出文件名
-                output.outputFileName = releaseApkName
+            if (file("BUNNY.jks").exists()) {
+                storeFile file("BUNNY.jks")
+                storePassword "000624"
+                keyAlias "bunny"
+                keyPassword "426000"
             }
-//            def outputFile = output.outputFile
-//            if (outputFile != null && outputFile.name.endsWith('.apk')) {
-//                outputFileName = "玉幂草_SHJ_${releaseTime()}_{$buildTypes}.apk"
-//            }
         }
     }
 
@@ -41,38 +22,49 @@ android {
         versionCode 12
         versionName '0.0.0'
         multiDexEnabled true
-        //设置room的Schema的位置
+
+        // 锁定 x86 与 armeabi-v7a 架构，保证 x86 平板优先加载原生 x86 动库并减小体积
+        ndk {
+            abiFilters 'x86', 'armeabi-v7a'
+        }
+
+        // 设置 room 的 Schema 位置
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
             }
         }
-        signingConfig signingConfigs.sigin
+
+        if (file("BUNNY.jks").exists()) {
+            signingConfig signingConfigs.sigin
+        }
+    }
+
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            if (variant.buildType.name.equals('release')) {
+                def releaseApkName = "Jade_SHJ_${releaseTime()}_${variant.buildType.name}.apk"
+                output.getPackageApplication().outputDirectory = new File(project.rootDir.absolutePath + "/Release")
+                output.outputFileName = releaseApkName
+            }
+        }
     }
 
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES'
+        // 防止多个 C++ 依赖库合并时 libc++_shared.so 冲突
+        pickFirst 'lib/x86/libc++_shared.so'
+        pickFirst 'lib/armeabi-v7a/libc++_shared.so'
     }
 
     buildTypes {
         debug {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             minifyEnabled false
-
-            ndk {
-                abiFilters 'armeabi-v7a', 'x86', 'x86_64', 'arm64'
-            }
-
-            
         }
         release {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             minifyEnabled true
-
-            ndk {
-                abiFilters 'armeabi-v7a', 'x86', 'x86_64', 'arm64'
-            }
-
         }
     }
 
@@ -86,6 +78,7 @@ android {
         abortOnError false
     }
 
+    // 针对 Android 4.x (Dalvik) 虚拟机的线性内存限制深度优化
     dexOptions {
         javaMaxHeapSize "4g"
         additionalParameters += '--multi-dex'
@@ -100,13 +93,6 @@ def releaseTime() {
 
 dependencies {
     api fileTree(dir: "libs", include: ["*.jar"])
-
-//    implementation 'com.github.xuexiangjys:XUpdate:2.1.2' // 版本更新
-//     for WebDAV
-//    implementation('com.github.thegrizzlylabs:sardine-android:0.8')
-//    {
-//        exclude group: 'com.squareup.okhttp3'
-//    }
 
     implementation 'org.nanohttpd:nanohttpd:2.3.1'
     implementation 'com.google.zxing:core:3.4.1'
@@ -141,7 +127,6 @@ dependencies {
         exclude group: 'com.android.support'
     }
     implementation 'com.lzy.net:okgo:3.0.4'
-    // implementation 'com.tencent.bugly:crashreport_upgrade:latest.release'
     implementation 'com.owen:tv-recyclerview:3.0.0'
 
     implementation 'com.github.getActivity:XXPermissions:13.6'
