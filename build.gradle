@@ -10,6 +10,9 @@ buildscript {
         gradlePluginPortal()
         maven { url "https://jitpack.io" }
         maven { url 'https://maven.aliyun.com/repository/public' }
+        maven { url 'https://download.01.org/crosswalk/releases/crosswalk/android/maven2' }
+        maven { url 'http://download.01.org/crosswalk/releases/crosswalk/android/maven2'; allowInsecureProtocol = true }
+        maven { url 'http://home.jundie.top:81/xwalk/maven2'; allowInsecureProtocol = true }
         maven { url 'https://o0halflife0o.github.io/crosswalk/releases/crosswalk/android/maven2' }
     }
     dependencies {
@@ -26,9 +29,11 @@ allprojects {
         mavenCentral()
         gradlePluginPortal()
         maven { url "https://jitpack.io" }
-        // 阿里云公共库镜像（包含 JCenter 完整历史归档，提供 okgo、tv-recyclerview 等旧库）
         maven { url 'https://maven.aliyun.com/repository/public' }
-        // Crosswalk 专用依赖库镜像
+        // 关键：Crosswalk 官方源与镜像站（提供 xwalk_shared_library:23.53.589.4）
+        maven { url 'https://download.01.org/crosswalk/releases/crosswalk/android/maven2' }
+        maven { url 'http://download.01.org/crosswalk/releases/crosswalk/android/maven2'; allowInsecureProtocol = true }
+        maven { url 'http://home.jundie.top:81/xwalk/maven2'; allowInsecureProtocol = true }
         maven { url 'https://o0halflife0o.github.io/crosswalk/releases/crosswalk/android/maven2' }
         jcenter()
     }
